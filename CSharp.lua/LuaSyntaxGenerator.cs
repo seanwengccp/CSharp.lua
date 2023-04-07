@@ -72,6 +72,7 @@ namespace CSharpLua {
       public bool IsNotConstantForEnum { get; set; }
       public bool IsNoConcurrent { get; set; }
       public string PredefinedImports { get; set; }
+      public bool IsForcePublic { get; set; }
 
       public SettingInfo() {
         Indent = 2;
@@ -430,7 +431,7 @@ namespace CSharpLua {
     }
 
     internal bool IsForcePublicSymbol(ISymbol symbol) {
-      return forcePublicSymbols_.Contains(symbol.OriginalDefinition);
+      return Setting.IsForcePublic || forcePublicSymbols_.Contains(symbol.OriginalDefinition);
     }
 
     internal bool IsPrivate(ISymbol symbol) {
