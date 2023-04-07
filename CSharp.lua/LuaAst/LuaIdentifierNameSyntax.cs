@@ -48,7 +48,7 @@ namespace CSharpLua.LuaAst {
     public static readonly LuaIdentifierNameSyntax Event = "System.event";
     public static readonly LuaIdentifierNameSyntax SystemVoid = "System.Void";
     public static readonly LuaIdentifierNameSyntax Nil = "nil";
-    public static readonly LuaIdentifierNameSyntax TypeOf = "System.typeof";
+    public static readonly LuaIdentifierNameSyntax TypeOf = "typeof";
     public static readonly LuaIdentifierNameSyntax Continue = "continue";
     public static readonly LuaIdentifierNameSyntax StringChar = "string.char";
     public static readonly LuaIdentifierNameSyntax ToStr = "ToString";
