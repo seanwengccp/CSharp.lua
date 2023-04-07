@@ -26,6 +26,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using CSharpLua.LuaAst;
+using System.Linq.Expressions;
 
 namespace CSharpLua {
   public sealed partial class LuaSyntaxNodeTransform {
@@ -1121,6 +1122,11 @@ namespace CSharpLua {
       }
 
       return expression.MemberAccess(name);
+    }
+
+    private LuaExpressionSyntax BuildEventMemberAccessExpression(LuaExpressionSyntax expression, LuaExpressionSyntax name, bool isObjectColon)
+    {
+      return expression.MemberAccess(name, isObjectColon);
     }
 
     public override LuaSyntaxNode VisitAttributeList(AttributeListSyntax node) {

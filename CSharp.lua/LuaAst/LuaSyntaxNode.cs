@@ -70,8 +70,8 @@ namespace CSharpLua.LuaAst {
       public const string CloseSummary = "</summary>";
       public const string Ctor = "ctor";
       public const string This = "this";
-      public const string Get = "get";
-      public const string Set = "set";
+      public const string Get = "get_";
+      public const string Set = "set_";
       public const string Add = "add";
       public const string Remove = "remove";
       public const string Index = "index";

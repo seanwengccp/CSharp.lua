@@ -2676,9 +2676,12 @@ namespace CSharpLua {
 
       var expression = BuildMemberAccessExpression(symbol, node.Expression);
       return symbol.Kind switch {
-        SymbolKind.Property or SymbolKind.Event =>
+        SymbolKind.Property =>
           BuildFieldOrPropertyMemberAccessExpression(expression, name, symbol.IsStatic),
-        
+
+        SymbolKind.Event =>
+          BuildEventMemberAccessExpression(expression, name, !symbol.IsStatic && symbol.Kind == SymbolKind.Method),
+
         SymbolKind.Method when IsDelegateExpression((IMethodSymbol)symbol, node, name, expression, out var delegateExpression) =>
           delegateExpression,
 
@@ -2915,6 +2918,10 @@ namespace CSharpLua {
 
       if (symbol.IsPrivate() && !CurTypeSymbol.IsContainsInternalSymbol(symbol)) {
         generator_.AddForcePublicSymbol(symbol);
+      }
+
+      if (symbol.Kind == SymbolKind.Event) {
+        return name;
       }
       return new LuaPropertyAdapterExpressionSyntax(identifierName);
     }
