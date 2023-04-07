@@ -71,6 +71,7 @@ namespace CSharpLua {
       public bool IsPreventDebugObject { get; set; }
       public bool IsNotConstantForEnum { get; set; }
       public bool IsNoConcurrent { get; set; }
+      public string PredefinedImports { get; set; }
 
       public SettingInfo() {
         Indent = 2;
@@ -222,7 +223,11 @@ namespace CSharpLua {
       var semanticModel = GetSemanticModel(syntaxTree);
       var compilationUnitSyntax = (CompilationUnitSyntax)syntaxTree.GetRoot();
       var transform = new LuaSyntaxNodeTransform(this, semanticModel);
-      return transform.VisitCompilationUnit(compilationUnitSyntax, isSingleFile);
+      var luaCompilationUnit = transform.VisitCompilationUnit(compilationUnitSyntax, isSingleFile);
+      if (!string.IsNullOrEmpty(Setting.PredefinedImports)) {
+        luaCompilationUnit.AddPredefinedImports(Setting.PredefinedImports);
+      }
+      return luaCompilationUnit;
     }
 
     private Task<LuaCompilationUnitSyntax> CreateCompilationUnitAsync(SyntaxTree syntaxTree, bool isSingleFile) {
@@ -334,6 +339,9 @@ namespace CSharpLua {
         LuaTableExpression typeTable = new LuaTableExpression();
         typeTable.Add("types", new LuaTableExpression(types.Select(i => new LuaStringLiteralExpressionSyntax(GetTypeShortName(i)))));
         LuaCompilationUnitSyntax luaCompilationUnit = new LuaCompilationUnitSyntax(hasGeneratedMark: false);
+        if (!string.IsNullOrEmpty(Setting.PredefinedImports)) {
+          luaCompilationUnit.AddPredefinedImports(Setting.PredefinedImports);
+        }
         luaCompilationUnit.AddStatement(LuaIdentifierNameSyntax.SystemInit.Invocation(typeTable));
         if (mainEntryPoint_ != null) {
           luaCompilationUnit.AddStatement(LuaBlankLinesStatement.One);
@@ -620,6 +628,9 @@ namespace CSharpLua {
           functionExpression.AddParameter("path");
           functionExpression.AddStatement(new LuaReturnStatementSyntax(LuaIdentifierNameSyntax.SystemInit.Invocation(t)));
           var luaCompilationUnit = new LuaCompilationUnitSyntax();
+          if (!string.IsNullOrEmpty(Setting.PredefinedImports)) {
+            luaCompilationUnit.AddPredefinedImports(Setting.PredefinedImports);
+          }
           luaCompilationUnit.AddStatement(new LuaReturnStatementSyntax(functionExpression));
           string outFile = Path.Combine(outFolder, "manifest.lua");
           Write(luaCompilationUnit, outFile);

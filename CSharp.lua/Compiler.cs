@@ -43,6 +43,7 @@ namespace CSharpLua {
     public bool IsNotConstantForEnum { get; set; }
     public bool IsNoConcurrent { get; set; }
     public string Include { get; set; }
+    public string PredefinedImports { get; set; }
 
     public Compiler(string input, string output, string lib, string meta, string csc, bool isClassic, string atts, string enums) {
       input_ = input;
@@ -177,6 +178,7 @@ namespace CSharpLua {
         IsInlineSimpleProperty = IsInlineSimpleProperty,
         IsPreventDebugObject = IsPreventDebugObject,
         IsNotConstantForEnum = IsNotConstantForEnum,
+        PredefinedImports = PredefinedImports,
       };
       return new LuaSyntaxGenerator(codes, libs, cscArguments_, Metas, setting);
     }

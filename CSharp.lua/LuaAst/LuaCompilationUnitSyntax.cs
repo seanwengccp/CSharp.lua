@@ -78,6 +78,18 @@ namespace CSharpLua.LuaAst {
       Statements.Add(statement);
     }
 
+    public void AddPredefinedImports(string predefinedImports) {
+      string[] imports = predefinedImports.Split(';');
+      foreach (string import in imports) {
+        if (string.IsNullOrEmpty(import)) 
+          continue;
+        var importArgs = import.Split('=');
+        if (importArgs.Length == 2) {
+          AddImport(importArgs[0], importArgs[1]);
+        }
+      }
+    }
+
     public bool IsEmpty {
       get {
         return typeDeclarationCount_ == 0;
