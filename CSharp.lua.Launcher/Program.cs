@@ -44,6 +44,9 @@ Options
 -inline-property: inline some single-line properties
 -include        : the root directory of the CoreSystem library, adds all the dependencies to a single file named out.lua
 -noconcurrent   : close concurrent compile
+
+-pi             : add predefine imports, like 'UnityEngine=CS.UnityEngine;', use ';' to seperate
+-force-public   : force all functions and types in lua to be public
 ";
     public static void Main(string[] args) {
       if (args.Length > 0) {
@@ -70,6 +73,9 @@ Options
           if (enums == null && cmds.ContainsKey("-e")) {
             enums = string.Empty;
           }
+
+          string predefinedImport = cmds.GetArgument("-pi", true);
+
           string csc = GetCSCArgument(args);
           bool isPreventDebugObject = cmds.ContainsKey("-p");
           bool isExportMetadata = cmds.ContainsKey("-metadata");
@@ -78,6 +84,7 @@ Options
           bool isNotConstantForEnum = cmds.ContainsKey("-ei");
           bool isNoConcurrent = cmds.ContainsKey("-noconcurrent");
           string include = cmds.GetArgument("-include", true);
+          bool isForcePublic = cmds.ContainsKey("-force-public");
           Compiler c = new Compiler(input, output, lib, meta, csc, isClassic, atts, enums) {
             IsExportMetadata = isExportMetadata,
             IsModule = isModule,
@@ -86,6 +93,8 @@ Options
             IsNotConstantForEnum = isNotConstantForEnum,
             Include = include,
             IsNoConcurrent = isNoConcurrent,
+            PredefinedImports = predefinedImport,
+            IsForcePublic = isForcePublic,
           };
           c.Compile();
           Console.WriteLine($"Compiled Success, cost {sw.Elapsed.TotalSeconds}s");
@@ -110,7 +119,7 @@ Options
       Console.Error.WriteLine(kHelpCmdString);
     }
 
-    private static HashSet<string> arguments_; 
+    private static HashSet<string> arguments_;
 
     private static bool IsArgumentKey(string key) {
       if (arguments_ == null) {
