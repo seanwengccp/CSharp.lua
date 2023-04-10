@@ -171,7 +171,11 @@ local function genericName(name, ...)
     else
       hascomma = true
     end
-    t[count] = cls.__name__
+    local clsName = cls.__name__
+	  if clsName == nil and cls ~= nil and cls.UnderlyingSystemType then
+		  clsName = cls.UnderlyingSystemType.FullName
+	  end
+    t[count] = clsName
     count = count + 1
   end
   t[count] = "]"
@@ -985,6 +989,9 @@ function System.new(cls, index, ...)
 end
 
 function System.base(this)
+  if this ~= nil and this.UnderlyingSystemType ~= nil then
+    return base(this) -- call xlua.base
+  end
   return getmetatable(getmetatable(this))
 end
 

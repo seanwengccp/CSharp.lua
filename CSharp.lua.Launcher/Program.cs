@@ -47,6 +47,7 @@ Options
 
 -pi             : add predefine imports, like 'UnityEngine=CS.UnityEngine;', use ';' to seperate
 -force-public   : force all functions and types in lua to be public
+-ignore-generic : ignore all type generic format
 ";
     public static void Main(string[] args) {
       if (args.Length > 0) {
@@ -85,6 +86,7 @@ Options
           bool isNoConcurrent = cmds.ContainsKey("-noconcurrent");
           string include = cmds.GetArgument("-include", true);
           bool isForcePublic = cmds.ContainsKey("-force-public");
+          bool isTypeIgnoreGeneric = cmds.ContainsKey("-ignore-generic");
           Compiler c = new Compiler(input, output, lib, meta, csc, isClassic, atts, enums) {
             IsExportMetadata = isExportMetadata,
             IsModule = isModule,
@@ -95,6 +97,7 @@ Options
             IsNoConcurrent = isNoConcurrent,
             PredefinedImports = predefinedImport,
             IsForcePublic = isForcePublic,
+            IsTypeIgnoreGeneric = isTypeIgnoreGeneric,
           };
           c.Compile();
           Console.WriteLine($"Compiled Success, cost {sw.Elapsed.TotalSeconds}s");

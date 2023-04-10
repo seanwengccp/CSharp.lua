@@ -73,6 +73,7 @@ namespace CSharpLua {
       public bool IsNoConcurrent { get; set; }
       public string PredefinedImports { get; set; }
       public bool IsForcePublic { get; set; }
+      public bool IsTypeIgnoreGeneric { get; set; }
 
       public SettingInfo() {
         Indent = 2;
@@ -2025,7 +2026,7 @@ namespace CSharpLua {
       }
 
       {
-        if (XmlMetaProvider.IsTypeIgnoreGeneric(namedTypeSymbol)) {
+        if (Setting.IsTypeIgnoreGeneric || XmlMetaProvider.IsTypeIgnoreGeneric(namedTypeSymbol)) {
           string name = typeName.ValueText;
           int genericTokenPos = name.LastIndexOf('_');
           if (genericTokenPos != -1) {
@@ -2114,7 +2115,7 @@ namespace CSharpLua {
       if (transform != null) {
         if (transform.IsNoImportTypeName) {
           if (!name.StartsWith(LuaIdentifierNameSyntax.System.ValueText) && !name.StartsWith(LuaIdentifierNameSyntax.Class.ValueText)) {
-            name = LuaIdentifierNameSyntax.Global.ValueText + '.' + name;
+            //name = LuaIdentifierNameSyntax.Global.ValueText + '.' + name; // We don't use the out. prefix.
           }
         } else {
           transform.ImportTypeName(ref name, (INamedTypeSymbol)symbol);
