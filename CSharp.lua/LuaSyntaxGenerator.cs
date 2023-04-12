@@ -73,7 +73,6 @@ namespace CSharpLua {
       public bool IsNoConcurrent { get; set; }
       public string PredefinedImports { get; set; }
       public bool IsForcePublic { get; set; }
-      public bool IsTypeIgnoreGeneric { get; set; }
 
       public SettingInfo() {
         Indent = 2;
@@ -2026,7 +2025,7 @@ namespace CSharpLua {
       }
 
       {
-        if (Setting.IsTypeIgnoreGeneric || XmlMetaProvider.IsTypeIgnoreGeneric(namedTypeSymbol)) {
+        if (XmlMetaProvider.IsTypeIgnoreGeneric(namedTypeSymbol)) {
           string name = typeName.ValueText;
           int genericTokenPos = name.LastIndexOf('_');
           if (genericTokenPos != -1) {

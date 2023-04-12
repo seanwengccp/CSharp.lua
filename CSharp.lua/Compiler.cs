@@ -45,7 +45,6 @@ namespace CSharpLua {
     public string Include { get; set; }
     public string PredefinedImports { get; set; }
     public bool IsForcePublic { get; set; }
-    public bool IsTypeIgnoreGeneric { get; set; }
 
     public Compiler(string input, string output, string lib, string meta, string csc, bool isClassic, string atts, string enums) {
       input_ = input;
@@ -182,7 +181,6 @@ namespace CSharpLua {
         IsNotConstantForEnum = IsNotConstantForEnum,
         PredefinedImports = PredefinedImports,
         IsForcePublic = IsForcePublic,
-        IsTypeIgnoreGeneric = IsTypeIgnoreGeneric,
       };
       return new LuaSyntaxGenerator(codes, libs, cscArguments_, Metas, setting);
     }

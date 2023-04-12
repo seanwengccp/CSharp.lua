@@ -989,9 +989,6 @@ function System.new(cls, index, ...)
 end
 
 function System.base(this)
-  if this ~= nil and this.UnderlyingSystemType ~= nil then
-    return base(this) -- call xlua.base
-  end
   return getmetatable(getmetatable(this))
 end
 
