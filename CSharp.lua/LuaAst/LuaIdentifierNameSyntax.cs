@@ -121,6 +121,9 @@ namespace CSharpLua.LuaAst {
     public static readonly LuaIdentifierNameSyntax SystemInit = "System.init";
     public static readonly LuaIdentifierNameSyntax InlineReturnLabel = "out";
 
+    public static readonly LuaIdentifierNameSyntax AddEventArguement = "'+'";
+    public static readonly LuaIdentifierNameSyntax RemoveEventArguement = "'-'";
+
     #region QueryExpression
     public static readonly LuaIdentifierNameSyntax LinqCast = "Linq.Cast";
     public static readonly LuaIdentifierNameSyntax LinqWhere = "Linq.Where";
@@ -170,7 +173,7 @@ namespace CSharpLua.LuaAst {
           return IsGetOrAdd ? Tokens.Get : Tokens.Set;
         }
 
-        return IsGetOrAdd ? Tokens.Add : Tokens.Remove;
+        return string.Empty;//IsGetOrAdd ? Tokens.Add : Tokens.Remove;
       }
     }
 

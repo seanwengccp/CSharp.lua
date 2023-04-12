@@ -1621,6 +1621,7 @@ namespace CSharpLua {
         }
 
         propertyAdapter.IsGetOrAdd = isPlus;
+        propertyAdapter.ArgumentList.AddArgument(isPlus ? LuaIdentifierNameSyntax.AddEventArguement : LuaIdentifierNameSyntax.RemoveEventArguement);
         propertyAdapter.ArgumentList.AddArgument(right);
         return propertyAdapter;
       }
