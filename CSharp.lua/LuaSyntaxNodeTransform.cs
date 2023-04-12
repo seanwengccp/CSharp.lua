@@ -2849,7 +2849,7 @@ namespace CSharpLua {
       bool isReadOnly;
       if (isProperty) {
         var propertySymbol = (IPropertySymbol)symbol;
-        isField = IsPropertyField(node, propertySymbol);
+        isField = true; //IsPropertyField(node, propertySymbol); // Always access a property as a field in XLua.
         isReadOnly = propertySymbol.IsReadOnly;
       } else {
         var eventSymbol = (IEventSymbol)symbol;
