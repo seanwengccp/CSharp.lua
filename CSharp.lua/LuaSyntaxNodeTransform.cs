@@ -3276,7 +3276,7 @@ namespace CSharpLua {
           var propertyField = (IPropertySymbol)symbol;
           identifier = VisitPropertyOrEventIdentifierName(node, propertyField, true, out bool isField);
           if (isField) {
-            CheckValueTypeClone(propertyField.Type, node, ref identifier, true);
+            //CheckValueTypeClone(propertyField.Type, node, ref identifier, true);  // Force all properties in xlua access as fields. And no need to clone.
           }
           break;
         }
