@@ -150,7 +150,7 @@ limitations under the License.
       </class>
       <class name="Array">
         <property name="Length">
-          <get Template="#{this}" />
+          <get Template="{this}.Count" />
         </property>
         <method name="BinarySearch" IgnoreGeneric="true" />
         <method name="Clear" Name="ClearArray" />
@@ -480,18 +480,18 @@ limitations under the License.
     <namespace name="System.Collections.Generic" Name="System">
       <class name="List`1" Name="System.List">
         <property name="Count">
-          <get Template="#{this}" />
+          <get Template="{this}.Count" />
         </property>
       </class>
       <class name="Dictionary`2" Name="System.Dictionary"/>
       <class name="Queue`1" Name="System.Queue">
         <property name="Count">
-          <get Template="#{this}" />
+          <get Template="{this}.Count" />
         </property>
       </class>
       <class name="Stack`1" Name="System.Stack">
         <property name="Count">
-          <get Template="#{this}" />
+          <get Template="{this}.Count" />
         </property>
       </class>
       <class name="LinkedList`1" Name="System.LinkedList">
@@ -525,7 +525,7 @@ limitations under the License.
         </method>
         <method name="CreateSetComparer" Template="System.SortedSet.CreateSetComparer({``0}, {0})" />
         <property name="Count">
-          <get Template="#{this}" />
+          <get Template="{this}.Count" />
         </property>
       </class>
       <class name="SortedList`2" Name="System.SortedList">
@@ -533,7 +533,7 @@ limitations under the License.
           <arg type="System.Collections.Generic.IComparer`1" />
         </method>
         <property name="Count">
-          <get Template="#{this}" />
+          <get Template="{this}.Count" />
         </property>
       </class>
       <class name="SortedDictionary`2" Name="System.SortedDictionary">
@@ -541,7 +541,7 @@ limitations under the License.
           <arg type="System.Collections.Generic.IComparer`1" />
         </method>
         <property name="Count">
-          <get Template="#{this}" />
+          <get Template="{this}.Count" />
         </property>
       </class>
       <class name="PriorityQueue`2" Name="System.PriorityQueue">
@@ -549,7 +549,7 @@ limitations under the License.
           <arg type="System.Collections.Generic.IComparer`1" />
         </method>
         <property name="Count">
-          <get Template="#{this}" />
+          <get Template="{this}.Count" />
         </property>
       </class>
       <class name="KeyValuePair`2" Name="System.KeyValuePair">
