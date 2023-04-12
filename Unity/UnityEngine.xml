@@ -38,6 +38,8 @@
         <method name="op_Inequality" Template="{0} ~= {1}" />
         <method name="op_Implicit" RetType="UnityEngine.Vector3" Template="UnityEngine.ToVector3({0})" />
         <method name="op_Implicit" RetType="UnityEngine.Vector2"  Template="UnityEngine.ToVector2({0})" />
+		<field name="x" Template="System.as({this}, UnityEngine.Vector2).x" />
+		<field name="y" Template="System.as({this}, UnityEngine.Vector2).y" />
       </class>
       <class name="Vector3">
         <method name="op_Addition" Template="{0} + {1}" />
@@ -47,6 +49,9 @@
         <method name="op_Division" Template="{0} / {1}" />
         <method name="op_Equality" Template="{0} == {1}" />
         <method name="op_Inequality" Template="{0} ~= {1}" />
+		<field name="x" Template="System.as({this}, UnityEngine.Vector3).x" />
+		<field name="y" Template="System.as({this}, UnityEngine.Vector3).y" />
+		<field name="z" Template="System.as({this}, UnityEngine.Vector3).z" />
       </class>
       <class name="Vector4">
         <method name="op_Addition" Template="{0} + {1}" />
@@ -59,6 +64,10 @@
         <method name="op_Implicit" RetType="UnityEngine.Vector4" Template="UnityEngine.ToVector4({0})" />
         <method name="op_Implicit" RetType="UnityEngine.Vector3" Template="UnityEngine.ToVector3({0})" />
         <method name="op_Implicit" RetType="UnityEngine.Vector2" Template="UnityEngine.ToVector2({0})" />
+		<field name="x" Template="System.as({this}, UnityEngine.Vector4).x" />
+		<field name="y" Template="System.as({this}, UnityEngine.Vector4).y" />
+		<field name="z" Template="System.as({this}, UnityEngine.Vector4).z" />
+		<field name="w" Template="System.as({this}, UnityEngine.Vector4).w" />
       </class>
       <class name="Color">
         <method name="op_Addition" Template="{0} + {1}" />
