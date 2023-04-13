@@ -586,6 +586,19 @@ namespace CSharpLua {
             break;
           }
 
+          if (lastTypes.Count == parentTypes.Count) {
+            bool isSameAsLast = true;
+            foreach (var type in lastTypes) {
+              if (!parentTypes.Contains(type)) {
+                isSameAsLast = false;
+                break;
+              }
+            }
+            if (isSameAsLast) {
+              break;
+            }
+          }
+
           if (count >= kMaxLoopCount) {
             throw new BugErrorException($"check depend failed, {string.Join(',', lastTypes)}");
           }
