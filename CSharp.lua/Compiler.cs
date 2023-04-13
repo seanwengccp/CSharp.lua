@@ -45,6 +45,7 @@ namespace CSharpLua {
     public string Include { get; set; }
     public string PredefinedImports { get; set; }
     public bool IsForcePublic { get; set; }
+    public string ExceptFileNames { get; set; }
 
     public Compiler(string input, string output, string lib, string meta, string csc, bool isClassic, string atts, string enums) {
       input_ = input;
@@ -157,7 +158,14 @@ namespace CSharpLua {
     private IEnumerable<string> GetSourceFiles(out bool isDirectory) {
       if (Directory.Exists(input_)) {
         isDirectory = true;
-        return Directory.EnumerateFiles(input_, "*.cs", SearchOption.AllDirectories);
+        var files = Directory.EnumerateFiles(input_, "*.cs", SearchOption.AllDirectories);
+        var exceptFileNames = ExceptFileNames.Split(';');
+        return files.Where(filename => {
+          foreach (var word in exceptFileNames) {
+            if (filename.Contains(word)) return false;
+          }
+          return true;
+        });
       }
 
       isDirectory = false;

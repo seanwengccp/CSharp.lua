@@ -47,6 +47,7 @@ Options
 
 -pi             : add predefine imports, like 'UnityEngine=CS.UnityEngine;', use ';' to seperate
 -force-public   : force all functions and types in lua to be public
+-except         : filter files if its' names contain the word in, use ';' to seperate
 ";
     public static void Main(string[] args) {
       if (args.Length > 0) {
@@ -85,6 +86,7 @@ Options
           bool isNoConcurrent = cmds.ContainsKey("-noconcurrent");
           string include = cmds.GetArgument("-include", true);
           bool isForcePublic = cmds.ContainsKey("-force-public");
+          string except = cmds.GetArgument("-except");
           Compiler c = new Compiler(input, output, lib, meta, csc, isClassic, atts, enums) {
             IsExportMetadata = isExportMetadata,
             IsModule = isModule,
@@ -95,6 +97,7 @@ Options
             IsNoConcurrent = isNoConcurrent,
             PredefinedImports = predefinedImport,
             IsForcePublic = isForcePublic,
+            ExceptFileNames = except,
           };
           c.Compile();
           Console.WriteLine($"Compiled Success, cost {sw.Elapsed.TotalSeconds}s");
