@@ -26,6 +26,7 @@ namespace CSharpLua {
     private const string kDllSuffix = ".dll";
     private const string kSystemMeta = "~/System.xml";
     private const char kLuaModuleSuffix = '!';
+    private const string kLibFileSuffix = ".txt";
 
     private readonly string input_;
     private readonly string output_;
@@ -49,6 +50,9 @@ namespace CSharpLua {
     public Compiler(string input, string output, string lib, string meta, string csc, bool isClassic, string atts, string enums) {
       input_ = input;
       output_ = output;
+      if (lib.EndsWith(kLibFileSuffix)) {
+        lib = File.ReadAllText(lib);
+      }
       libs_ = Utility.Split(lib);
       metas_ = Utility.Split(meta);
       cscArguments_ = string.IsNullOrEmpty(csc) ? Array.Empty<string>() : csc.Trim().Split(' ', '\t');
