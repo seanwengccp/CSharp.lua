@@ -1024,7 +1024,7 @@ namespace CSharpLua {
       switch (symbol.Kind) {
         case SymbolKind.Property:{
           var propertySymbol = (IPropertySymbol)symbol;
-          if (IsPropertyField(propertySymbol)) {
+          if (IsPropertyField(propertySymbol) && !IsPropertyTemplate(propertySymbol)) {
             names.Add(symbol.Name);
           } else {
             string baseName = GetSymbolBaseName(symbol);
@@ -1421,6 +1421,7 @@ namespace CSharpLua {
     private readonly Dictionary<INamedTypeSymbol, Dictionary<ISymbol, ISymbol>> implicitInterfaceTypes_ = new(SymbolEqualityComparer.Default);
     private readonly HashSet<INamedTypeSymbol> typesOfExtendSelf_ = new(SymbolEqualityComparer.Default);
 
+    private readonly ConcurrentDictionary<IPropertySymbol, bool> isPropertyTemplates_ = new(SymbolEqualityComparer.Default);
     private readonly ConcurrentDictionary<IPropertySymbol, bool> isFieldProperties_ = new(SymbolEqualityComparer.Default);
     private readonly ConcurrentDictionary<IEventSymbol, bool> isFieldEvents_ = new(SymbolEqualityComparer.Default);
     private readonly ConcurrentDictionary<ISymbol, bool> isMoreThanLocalVariables_ = new(SymbolEqualityComparer.Default);
@@ -1642,6 +1643,18 @@ namespace CSharpLua {
       return symbol.IsAutoProperty();
     }
 
+    internal bool IsPropertyTemplate(IPropertySymbol symbol) {
+      return isPropertyTemplates_.GetOrAdd(symbol, symbol => {
+        var node = symbol.GetDeclaringSyntaxNode();
+        if (node == null) {
+          return false;
+        } else {
+          return node.HasCSharpLuaAttribute(LuaDocumentStatement.AttributeFlags.Get)
+            || symbol.GetDeclaringSyntaxNode().HasCSharpLuaAttribute(LuaDocumentStatement.AttributeFlags.Set);
+        }
+      });
+    }
+
     internal bool IsPropertyField(IPropertySymbol symbol) {
       return isFieldProperties_.GetOrAdd(symbol, symbol => {
         bool? isMateField = XmlMetaProvider.IsPropertyField(symbol);
@@ -1747,7 +1760,7 @@ namespace CSharpLua {
       });
     }
 
-    internal bool IsMorenThanUpValueStaticCtorField(ISymbol symbol) {
+    internal bool IsMoreThanUpValueStaticCtorField(ISymbol symbol) {
       if (IsStaticCtorField(symbol)) {
         var definitionType = symbol.ContainingType.OriginalDefinition;
         var set = isMoreThanUpValueStaticFields_.GetOrAdd(definitionType, definitionType => {
@@ -1950,29 +1963,29 @@ namespace CSharpLua {
       return name;
     }
 
-    internal LuaExpressionSyntax GetTypeName(ISymbol symbol, LuaSyntaxNodeTransform transfor = null) {
+    internal LuaExpressionSyntax GetTypeName(ISymbol symbol, LuaSyntaxNodeTransform transform = null) {
       switch (symbol.Kind) {
         case SymbolKind.TypeParameter: {
           return symbol.Name;
         }
         case SymbolKind.ArrayType: {
           var arrayType = (IArrayTypeSymbol)symbol;
-          transfor?.AddGenericTypeCounter();
-          var elementType = GetTypeName(arrayType.ElementType, transfor);
-          transfor?.SubGenericTypeCounter();
+          transform?.AddGenericTypeCounter();
+          var elementType = GetTypeName(arrayType.ElementType, transform);
+          transform?.SubGenericTypeCounter();
           var invocation = new LuaInvocationExpressionSyntax(LuaIdentifierNameSyntax.Array, elementType);
           if (arrayType.Rank > 1) {
             invocation.AddArgument(arrayType.Rank.ToString());
           }
           LuaExpressionSyntax luaExpression = invocation;
-          transfor?.ImportGenericTypeName(ref luaExpression, arrayType);
+          transform?.ImportGenericTypeName(ref luaExpression, arrayType);
           return luaExpression;
         }
         case SymbolKind.PointerType: {
           var pointType = (IPointerTypeSymbol)symbol;
-          var elementTypeExpression = GetTypeName(pointType.PointedAtType, transfor);
+          var elementTypeExpression = GetTypeName(pointType.PointedAtType, transform);
           LuaExpressionSyntax luaExpression = new LuaInvocationExpressionSyntax(LuaIdentifierNameSyntax.Array, elementTypeExpression);
-          transfor?.ImportGenericTypeName(ref luaExpression, pointType);
+          transform?.ImportGenericTypeName(ref luaExpression, pointType);
           return luaExpression;
         }
         case SymbolKind.DynamicType: {
@@ -1982,16 +1995,16 @@ namespace CSharpLua {
 
       var namedTypeSymbol = (INamedTypeSymbol)symbol;
       if (IsConstantEnum(namedTypeSymbol)) {
-        return GetTypeName(namedTypeSymbol.EnumUnderlyingType, transfor);
+        return GetTypeName(namedTypeSymbol.EnumUnderlyingType, transform);
       }
 
       if (namedTypeSymbol.IsDelegateType()) {
-        if (transfor?.IsMetadataTypeName == true) {
+        if (transform?.IsMetadataTypeName == true) {
           var delegateMethod = namedTypeSymbol.DelegateInvokeMethod;
           Contract.Assert(delegateMethod != null);
           if (!delegateMethod.Parameters.IsEmpty || !delegateMethod.ReturnsVoid) {
-            var arguments = delegateMethod.Parameters.Select(i => GetTypeName(i.Type, transfor)).ToList();
-            var argument = delegateMethod.ReturnsVoid ? LuaIdentifierNameSyntax.SystemVoid : GetTypeName(delegateMethod.ReturnType, transfor);
+            var arguments = delegateMethod.Parameters.Select(i => GetTypeName(i.Type, transform)).ToList();
+            var argument = delegateMethod.ReturnsVoid ? LuaIdentifierNameSyntax.SystemVoid : GetTypeName(delegateMethod.ReturnType, transform);
             arguments.Add(argument);
             return new LuaInvocationExpressionSyntax(LuaIdentifierNameSyntax.Delegate, arguments);
           }
@@ -2011,15 +2024,15 @@ namespace CSharpLua {
         return LuaIdentifierNameSyntax.Tuple;
       }
 
-      if (transfor?.IsNoneGenericTypeCounter == true) {
-        var curTypeDeclaration = transfor.CurTypeDeclaration;
+      if (transform?.IsNoneGenericTypeCounter == true) {
+        var curTypeDeclaration = transform.CurTypeDeclaration;
         if (curTypeDeclaration != null && curTypeDeclaration.CheckTypeName(namedTypeSymbol, out var classIdentifier)) {
           return classIdentifier;
         }
       }
 
-      var typeName = GetTypeShortName(namedTypeSymbol, transfor);
-      var typeArguments = GetTypeArguments(namedTypeSymbol, transfor);
+      var typeName = GetTypeShortName(namedTypeSymbol, transform);
+      var typeArguments = GetTypeArguments(namedTypeSymbol, transform);
       if (typeArguments.Count == 0) {
         return typeName;
       }
@@ -2037,7 +2050,7 @@ namespace CSharpLua {
         var invocationExpression = new LuaInvocationExpressionSyntax(typeName);
         invocationExpression.AddArguments(typeArguments);
         LuaExpressionSyntax luaExpression = invocationExpression;
-        transfor?.ImportGenericTypeName(ref luaExpression, namedTypeSymbol);
+        transform?.ImportGenericTypeName(ref luaExpression, namedTypeSymbol);
         return luaExpression;
       }
     }
@@ -2049,25 +2062,25 @@ namespace CSharpLua {
       return typeArguments;
     }
 
-    private void FillExternalTypeArgument(List<LuaExpressionSyntax> typeArguments, INamedTypeSymbol typeSymbol, LuaSyntaxNodeTransform transfor) {
+    private void FillExternalTypeArgument(List<LuaExpressionSyntax> typeArguments, INamedTypeSymbol typeSymbol, LuaSyntaxNodeTransform transform) {
       var externalType = typeSymbol.ContainingType;
       if (externalType != null) {
-        FillExternalTypeArgument(typeArguments, externalType, transfor);
-        FillTypeArguments(typeArguments, externalType, transfor);
+        FillExternalTypeArgument(typeArguments, externalType, transform);
+        FillTypeArguments(typeArguments, externalType, transform);
       }
     }
 
-    private void FillTypeArguments(List<LuaExpressionSyntax> typeArguments, INamedTypeSymbol typeSymbol, LuaSyntaxNodeTransform transfor) {
+    private void FillTypeArguments(List<LuaExpressionSyntax> typeArguments, INamedTypeSymbol typeSymbol, LuaSyntaxNodeTransform transform) {
       if (typeSymbol.TypeArguments.Length > 0) {
-        transfor?.AddGenericTypeCounter();
+        transform?.AddGenericTypeCounter();
         foreach (var typeArgument in typeSymbol.TypeArguments) {
           if (typeArgument.Kind == SymbolKind.ErrorType) {
             break;
           }
-          var typeArgumentExpression = GetTypeName(typeArgument, transfor);
+          var typeArgumentExpression = GetTypeName(typeArgument, transform);
           typeArguments.Add(typeArgumentExpression);
         }
-        transfor?.SubGenericTypeCounter();
+        transform?.SubGenericTypeCounter();
       }
     }
 

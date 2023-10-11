@@ -220,6 +220,8 @@ namespace CSharpLua.LuaAst {
       MetadataAll = 1 << 3,
       Template = 1 << 4,
       Params = 1 << 5,
+      Get = 1 << 6,
+      Set = 1 << 7
     }
 
     public readonly List<LuaStatementSyntax> Statements = new();
@@ -239,8 +241,8 @@ namespace CSharpLua.LuaAst {
 
       var document = new LuaSummaryDocumentStatement();
       foreach (var item in items) {
-        if (IsAttribute(item, out AttributeFlags arrt)) {
-          attr_ |= arrt;
+        if (IsAttribute(item, out AttributeFlags attr)) {
+          attr_ |= attr;
         } else {
           document.Texts.Add(item);
         }
