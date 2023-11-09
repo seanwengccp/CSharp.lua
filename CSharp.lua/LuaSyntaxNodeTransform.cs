@@ -1626,6 +1626,10 @@ namespace CSharpLua {
         return propertyAdapter;
       }
 
+      if (left is LuaMemberAccessExpressionSyntax memberAccessExpressionSyntax) {
+        return new LuaInvocationExpressionSyntax(memberAccessExpressionSyntax, memberAccessExpressionSyntax.Expression, isPlus ? LuaIdentifierNameSyntax.AddEventArguement : LuaIdentifierNameSyntax.RemoveEventArguement, right);
+      }
+
       return left.Assignment(BuildDelegateBinaryExpression(left, right, isPlus));
     }
 
