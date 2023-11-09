@@ -86,7 +86,7 @@ Options
           bool isNoConcurrent = cmds.ContainsKey("-noconcurrent");
           string include = cmds.GetArgument("-include", true);
           bool isForcePublic = cmds.ContainsKey("-force-public");
-          string except = cmds.GetArgument("-except");
+          string except = cmds.GetArgument("-except", true);
           Compiler c = new Compiler(input, output, lib, meta, csc, isClassic, atts, enums) {
             IsExportMetadata = isExportMetadata,
             IsModule = isModule,
